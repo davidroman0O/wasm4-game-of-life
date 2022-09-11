@@ -12,10 +12,6 @@ var past = BoundedLifeArray.init(w4.SCREEN_SIZE * w4.SCREEN_SIZE) catch @panic("
 var prng: std.rand.DefaultPrng = undefined;
 var random: std.rand.Random = undefined;
 
-///  colors
-const ALIVE: u32 = 0xfff6d3;
-const DEAD: u32 = 0x4231;
-
 ///  frame count duuuh
 var frame_count: u32 = 0;
 
@@ -47,10 +43,10 @@ var bottomLeftY: i32 = 0;
 ///  init
 export fn start() void {
     w4.PALETTE.* = .{
-        ALIVE,
-        DEAD,
-        0xeb6b6f,
-        0x7c3f58,
+        0xfff6d3,
+        0x4231,
+        0x764462,
+        0xedb4a1,
     };
     reset(seed);
 }
@@ -174,9 +170,9 @@ fn gameOfLife() void {
                 index = (w4.SCREEN_SIZE * x) + y;
                 alive = past.get(index);
                 if (alive) {
-                    w4.DRAW_COLORS.* = 0x1;
+                    w4.DRAW_COLORS.* = if (!isInverseMode) 0x1 else 0x3;
                 } else {
-                    w4.DRAW_COLORS.* = 0x2;
+                    w4.DRAW_COLORS.* = if (!isInverseMode) 0x2 else 0x4;
                 }
                 pixel(x, y);
             }
@@ -193,9 +189,9 @@ fn gameOfLife() void {
             //  
             alive = nextLife(@intCast(i32, x), @intCast(i32, y), alive);
             if (alive) {
-                w4.DRAW_COLORS.* = 0x1;
+                w4.DRAW_COLORS.* = if (!isInverseMode) 0x1 else 0x3;
             } else {
-                w4.DRAW_COLORS.* = 0x2;
+                w4.DRAW_COLORS.* = if (!isInverseMode) 0x2 else 0x4;
             }
             pixel(x, y);
         }
@@ -209,10 +205,10 @@ fn gameOfLife() void {
     while (x < w4.SCREEN_SIZE) : (x += 1) {
         while (y < w4.SCREEN_SIZE) : (y += 1) {
             index = (w4.SCREEN_SIZE * x) + y;
-            if (isColor(x, y, 0x1)) {
+            if (isColor(x, y, if (!isInverseMode) 0x1 else 0x3)) {
                 past.set(index, true);
             }
-            if (isColor(x, y, 0x2)) {
+            if (isColor(x, y, if (!isInverseMode) 0x2 else 0x4)) {
                 past.set(index, false);
             }
         }
